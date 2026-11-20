@@ -13,7 +13,7 @@ const server = http.createServer(async (req,res) => {
     if (!['file','scan'].includes(mode) || typeof target !== 'string' || !target.trim() || target.startsWith('-')) throw Error('入力を確認してください');
     if(mode==='scan' && !/^https?:\/\//i.test(target)) throw Error('http:// または https:// から始まるURLを入力してください');
     const args=mode==='scan'?['scan',target]:[path.resolve(target)];
-    const child=spawn(process.execPath,[path.join(root,'bin/ai-design-check.js'),...args],{cwd:root});
+    const child=spawn(process.execPath,[path.join(root,'bin/ai-design-check.js'),...args,'--json'],{cwd:root});
     let output=''; child.stdout.on('data',c=>output+=c); child.stderr.on('data',c=>output+=c);
     child.on('error',e=>{res.writeHead(500);res.end(e.message)});
     child.on('close',code=>{if(!res.writableEnded){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({code,output}));}});
